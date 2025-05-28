@@ -1,0 +1,101 @@
+{
+  "name": "markdownspeedreader",
+  "displayName": "Markdown Speed Reader",
+  "description": "A VSCode extension for speed reading markdown and text files with configurable reading speeds and controls.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other",
+    "Education"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "markdownspeedreader.speedreadFile",
+        "title": "Speed Read Current File",
+        "category": "Speed Reader"
+      },
+      {
+        "command": "markdownspeedreader.speedreadSelection",
+        "title": "Speed Read Selection",
+        "category": "Speed Reader"
+      },
+      {
+        "command": "markdownspeedreader.speedreadFromFile",
+        "title": "Speed Read File...",
+        "category": "Speed Reader"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "markdownspeedreader.speedreadFile",
+          "when": "editorTextFocus",
+          "group": "speedreader"
+        },
+        {
+          "command": "markdownspeedreader.speedreadSelection",
+          "when": "editorHasSelection",
+          "group": "speedreader"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "markdownspeedreader.speedreadFromFile",
+          "when": "resourceExtname == .md || resourceExtname == .txt || resourceExtname == .markdown",
+          "group": "speedreader"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Speed Reader",
+      "properties": {
+        "speedreader.defaultWPM": {
+          "type": "number",
+          "default": 250,
+          "minimum": 50,
+          "maximum": 1000,
+          "description": "Default words per minute for speed reading"
+        },
+        "speedreader.pauseOnPunctuation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Pause briefly after punctuation marks"
+        },
+        "speedreader.fontSize": {
+          "type": "number",
+          "default": 24,
+          "minimum": 12,
+          "maximum": 48,
+          "description": "Font size for the speed reading display"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.100.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.25.1",
+    "fs": "^0.0.1-security",
+    "markdown-it": "^14.0.0",
+    "typescript": "^5.8.3"
+  }
+}
