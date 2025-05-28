@@ -4,14 +4,23 @@ A powerful VSCode extension that enables speed reading of markdown and text file
 
 ## Features
 
-- 🚀 **Speed Reading**: Read text at configurable speeds (50-1000 WPM)
-- 🎯 **ORP Highlighting**: Optimal Recognition Point highlighting for enhanced reading efficiency
-- 📝 **Markdown Support**: Intelligent markdown parsing with code block extraction
-- 🎮 **Intuitive Controls**: Play/pause/stop with keyboard shortcuts
-- 📊 **Progress Tracking**: Visual progress bar with seeking capability
-- ⚙️ **Configurable Settings**: Customizable reading speed, font size, ORP colors, and behavior
-- 🎨 **VSCode Integration**: Seamless theme integration and context menu options
-- 📱 **Responsive Design**: Works well on different screen sizes
+- 🚀 **Speed Reading**: Read text at configurable speeds (50-1000 WPM).
+- 🎯 **ORP Highlighting**: Optimal Recognition Point (ORP) highlighting for enhanced reading efficiency, applied to both regular words and short inline code.
+- 📝 **Advanced Markdown Support**:
+    - Intelligent Markdown parsing using `markdown-it`.
+    - **Fenced Code Block Handling**: Extracts full code blocks (e.g., ```python ... ```) and displays them in a dedicated, scrollable panel adjacent to the main reading area. This allows you to read descriptive text while simultaneously viewing the associated code.
+    - **Inline Code Handling**:
+        - Short inline code snippets (e.g., `` `variableName` ``) are specially styled (monospace font, background) and displayed in the main reading area with ORP.
+        - Longer inline code snippets are treated as full code blocks and displayed in the dedicated code panel.
+- ✨ **Dedicated Code View**: A separate panel within the speed reading UI dynamically displays the content of the current code block, complete with its language identifier if provided in the Markdown.
+- 🎮 **Intuitive Controls**: Play/pause/stop functionality accessible via UI buttons and keyboard shortcuts (Spacebar for play/pause, Escape for stop).
+- 📊 **Progress Tracking**: Visual progress bar indicating your position in the text, with click-to-seek functionality.
+- ⚙️ **Configurable Settings**:
+    - Customizable reading speed (WPM).
+    - Adjustable ORP highlight color via a color picker.
+    - Option to enable/disable pausing on punctuation.
+- 🎨 **VSCode Integration**: Seamless integration with VSCode themes and context menu options for quick access.
+- 📱 **Responsive Design**: The reading interface, including the code panel, adapts well to different panel sizes.
 
 ## Installation
 
@@ -48,28 +57,44 @@ While the speed reader is active:
 
 ### Speed Reading Interface
 
-The speed reading interface includes:
+The speed reading interface is designed for focused reading and provides comprehensive controls:
 
-1. **Reading Area**: Large, centered display of the current word with ORP highlighting
-2. **Playback Controls**: Play, Pause, and Stop buttons
-3. **Speed Control**: Adjustable WPM (Words Per Minute) input
-4. **Progress Bar**: Visual progress indicator with click-to-seek functionality
-5. **Settings**: Toggle punctuation pausing and customize ORP highlight color
+1.  **Main Reading Area**:
+    *   Displays the current word with the Optimal Recognition Point (ORP) character highlighted.
+    *   Short inline code snippets are rendered here with a distinct style (e.g., monospace font, background color) and also feature ORP highlighting.
+    *   A "Ready to start reading..." message appears when no text is loaded or after stopping.
+2.  **Code Panel**:
+    *   Located adjacent to the main reading area.
+    *   Dynamically displays the content of the currently active fenced code block or long inline code block.
+    *   Includes a header indicating "Code Block" and the detected language (e.g., "Code Block (python)").
+    *   Shows a placeholder message like "No code block currently active." when no code block corresponds to the current text position.
+3.  **Playback Controls**: Buttons for Play, Pause, and Stop.
+4.  **Speed Control**: An input field to adjust WPM (Words Per Minute) from 50 to 1000.
+5.  **Progress Bar**:
+    *   Visually shows the current reading progress.
+    *   Allows seeking to any part of the text by clicking on the bar.
+    *   Displays current/total words and percentage.
+6.  **Settings**:
+    *   A checkbox to toggle "Pause on punctuation."
+    *   A color picker to customize the "ORP Highlight Color" in real-time.
 
 ### ORP (Optimal Recognition Point) Highlighting
 
 The extension features advanced ORP highlighting to enhance reading speed and comprehension:
 
-- **What is ORP**: The optimal character position in each word where your eye should focus for fastest recognition
-- **Algorithm**: Uses the proven formula `Math.floor(word.length * 0.3)` to calculate the ideal focus point
-- **Visual Design**: The ORP character appears bold and colored (default: red #ff4444)
+- **What is ORP**: The ORP is the character position within a word where your eye should focus for the fastest recognition. This minimizes saccadic eye movements.
+- **Algorithm**: The ORP is calculated using the formula `Math.floor(word.length * 0.3)`. For example, in a 10-letter word, the 3rd letter (index 2) would be the ORP. The calculation ensures a valid position even for very short words.
+- **Visual Design**:
+    - For regular words, the ORP character is displayed in bold and with a customizable color (default: red `#ff4444`). The rest of the word is displayed around this central point.
+    - For short inline code snippets displayed in the main reading area, the ORP logic still applies to the code content. The ORP character within the inline code receives a subtle highlight (e.g., slightly different background) to maintain readability within the code's styling.
 - **Examples**:
   - "cat" → **c**at (1st character)
   - "quick" → q**u**ick (2nd character)
   - "reading" → re**a**ding (3rd character)
   - "understanding" → und**e**rstanding (4th character)
-- **Customization**: Use the color picker in the interface to change the highlight color in real-time
-- **Benefits**: Reduces eye movement and increases reading speed by providing a consistent focal point
+  - `` `val` `` → `**v**al` (styled as inline code, with 'v' subtly highlighted)
+- **Customization**: The ORP highlight color for regular words can be changed in real-time using the color picker in the settings section of the UI.
+- **Benefits**: Helps to reduce subvocalization and eye movement, potentially increasing reading speed and improving focus.
 
 ## Configuration
 
@@ -118,18 +143,36 @@ Configure the extension via VSCode settings (`File > Preferences > Settings`):
 
 ### Text Processing Pipeline
 
-1. **File Reading**: Content is read from the selected file or editor
-2. **Format Detection**: Automatic detection of markdown vs plain text
-3. **Parsing**: Markdown is converted to clean plain text, code blocks are extracted
-4. **Tokenization**: Text is split into individual words
-5. **Display**: Words are presented sequentially at the configured speed
+The extension processes text through the following stages:
+
+1.  **File Reading/Content Acquisition**: Raw text content is obtained from the active editor, a user selection, or a chosen file (`extension.ts`, `file_reader.ts`).
+2.  **Format Detection & Parsing (`markdown_parser.ts` via `ui_module.ts`)**:
+    *   The `ui_module.ts` receives the raw text.
+    *   It uses `MarkdownParser.isMarkdown()` to check if the content is Markdown.
+    *   If it is Markdown, `MarkdownParser.parseMarkdown()`:
+        *   Extracts fenced code blocks (e.g., ``` ```) and long inline code snippets. These are stored in an ordered array.
+        *   Replaces these extracted code blocks in the main text stream with placeholder tokens (e.g., `[CODE BLOCK N]`).
+        *   Wraps short inline code snippets (e.g., `` `code` ``) with special markers (`«code:short»code«/code»`) for distinct rendering.
+        *   Converts the remaining Markdown to HTML using `markdown-it`, then strips HTML tags to get clean plain text.
+    *   If not Markdown, the raw text is used as is (or after basic whitespace normalization).
+3.  **Engine Loading (`speedreading_engine.ts`)**:
+    *   The `ui_module.ts` loads the processed plain text (containing placeholders and markers) and the array of extracted code blocks into the `SpeedreadingEngine`.
+4.  **Tokenization (`speedreading_engine.ts`)**:
+    *   The engine splits the processed plain text into an array of "words" based on whitespace. Placeholders like `[CODE BLOCK N]` become sequences of words (e.g., `"[CODE"`, `"BLOCK"`, `"N]"`) in this array.
+5.  **Display & Orchestration (`speedreading_engine.ts` & `ui_module.ts` webview)**:
+    *   The engine iterates through the tokenized words.
+    *   **For regular words**: It calculates ORP segments and sends them to the webview for display in the main reading area. Words marked as `«code:short»...«/code»` are identified, and this status is passed to the webview for special styling.
+    *   **For `[CODE BLOCK N]` tokens**: The engine identifies these sequences, retrieves the corresponding code block from its stored array, and instructs the webview (via a callback) to display this code block in the dedicated code panel.
+    *   Words are presented sequentially at the configured WPM, with adaptive timing and punctuation pauses.
 
 ### Smart Features
 
-- **Adaptive Timing**: Longer words are displayed slightly longer for better comprehension
-- **Punctuation Awareness**: Optional pausing after sentence-ending punctuation
-- **Progress Tracking**: Real-time progress with seeking capability
-- **Memory Efficient**: Optimized for large documents
+- **Adaptive Timing**: The display duration for each word is slightly adjusted based on its length (longer words get more time) to improve comprehension.
+- **Punctuation Awareness**: An optional feature to automatically pause briefly after encountering sentence-ending punctuation (., !, ?, ;).
+- **Integrated Code Block Display**: Fenced code blocks and long inline code are shown in a separate, scrollable panel within the UI, synchronized with the text being read. This allows users to view code in context without interrupting the reading flow of the main prose.
+- **Styled Inline Code**: Short inline code snippets are visually distinguished within the main reading flow using monospace fonts and background highlights, with ORP applied.
+- **Real-time Progress Tracking**: The UI provides a dynamic progress bar and text indicating the current position, total words, and percentage completed. Users can click the progress bar to seek.
+- **Memory Efficient**: Designed to handle large documents by processing text into manageable word arrays and efficiently updating the UI.
 
 ## Development
 
@@ -188,10 +231,12 @@ npm run test:coverage
 The extension follows a modular architecture with clear separation of concerns:
 
 - **Extension Host**: VSCode integration and command registration
-- **Engine**: Core speed reading logic and state management
-- **UI**: Webview-based interface with real-time updates
-- **Parser**: Text processing with markdown support
-- **File Reader**: Robust file I/O with error handling
+- **Extension Host (`extension.ts`)**: Integrates with VSCode, registers commands, and initiates the speed reading process by passing raw text to the `SpeedreadingUI`.
+- **UI Module (`ui_module.ts`)**: Manages the WebviewPanel. It orchestrates the parsing of raw text by invoking the `MarkdownParser`, then initializes and communicates with the `SpeedreadingEngine`. It renders the UI in the webview and handles two-way communication (user inputs to engine, engine updates to webview).
+- **Markdown Parser (`markdown_parser.ts`)**: Responsible for detecting Markdown, converting it to plain text, extracting all code blocks (fenced and long inline), replacing them with placeholder tokens, and marking short inline code for special rendering.
+- **Speedreading Engine (`speedreading_engine.ts`)**: Contains the core logic for text tokenization, WPM timing, playback control, ORP calculation, and managing the sequence of words and code blocks. It uses callbacks to send updates (current word, active code block, state changes) to the `UI Module`.
+- **File Reader (`file_reader.ts`)**: Provides utility for reading file content from the disk, used by the "Speed Read File..." command.
+- **Webview UI (HTML/CSS/JS within `ui_module.ts`)**: The client-side interface that displays words, code blocks, controls, and settings. It communicates with the `UI Module` (extension host side) via `postMessage`.
 
 ## Contributing
 

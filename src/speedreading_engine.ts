@@ -263,8 +263,8 @@ export class SpeedreadingEngine {
     }
 
     private shouldPauseAfterWord(): boolean {
-        if (this.currentIndex === 0) return false;
-        
+        if (this.currentIndex === 0) {return false;}
+
         const currentWord = this.words[this.currentIndex - 1];
         return /[.!?;:]$/.test(currentWord);
     }
