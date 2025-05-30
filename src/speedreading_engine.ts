@@ -253,9 +253,16 @@ export class SpeedreadingEngine {
 
         // Add pause for punctuation if enabled
         if (this.config.pauseOnPunctuation && this.shouldPauseAfterWord()) {
-            this.pause();
+            this.pause(); 
             setTimeout(() => {
-                if (!this.isPlaying) { // Only resume if user hasn't started manually
+                // If currentIndex is at or past the end of words, it means the
+                // document just finished with the punctuated word. Do not restart.
+                if (this.currentIndex >= this.words.length) {
+                    return; 
+                }
+
+                // Original logic to resume play if not already playing and not at the end.
+                if (!this.isPlaying) { 
                     this.play();
                 }
             }, 300);
