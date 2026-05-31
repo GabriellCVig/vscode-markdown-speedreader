@@ -63,6 +63,42 @@ describe('MarkdownParser.parseMarkdown', () => {
         assert.ok(!parsedText.includes('this is a very long inline command indeed'));
     });
 
+    describe('configurable inline-code threshold', () => {
+        it('keeps a 25-char span inline when maxInlineCodeLength is 30', () => {
+            const span = 'a'.repeat(25);
+            const input = `use the \`${span}\` thing`;
+            const { parsedText, codeBlocks } = MarkdownParser.parseMarkdown(input, 30);
+            assert.ok(parsedText.includes(`«code:short»${span}«/code»`));
+            assert.strictEqual(codeBlocks.length, 0);
+        });
+
+        it('keeps a 20-char span inline at the default boundary', () => {
+            const span = 'a'.repeat(20);
+            const input = `use the \`${span}\` thing`;
+            const { parsedText, codeBlocks } = MarkdownParser.parseMarkdown(input);
+            assert.ok(parsedText.includes(`«code:short»${span}«/code»`));
+            assert.strictEqual(codeBlocks.length, 0);
+        });
+
+        it('pushes a 21-char span to codeBlocks at the default boundary', () => {
+            const span = 'a'.repeat(21);
+            const input = `use the \`${span}\` thing`;
+            const { parsedText, codeBlocks } = MarkdownParser.parseMarkdown(input);
+            assert.strictEqual(codeBlocks.length, 1);
+            assert.ok(codeBlocks[0].includes(span));
+            assert.ok(parsedText.includes('[CODE BLOCK'));
+        });
+
+        it('pushes a 17-char span to codeBlocks when maxInlineCodeLength is 16', () => {
+            const span = 'a'.repeat(17);
+            const input = `use the \`${span}\` thing`;
+            const { parsedText, codeBlocks } = MarkdownParser.parseMarkdown(input, 16);
+            assert.strictEqual(codeBlocks.length, 1);
+            assert.ok(codeBlocks[0].includes(span));
+            assert.ok(parsedText.includes('[CODE BLOCK'));
+        });
+    });
+
     it('strips HTML tags from prose', () => {
         const input = '# Heading\n\nSome **bold** text.';
         const { parsedText } = MarkdownParser.parseMarkdown(input);

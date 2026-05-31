@@ -6,9 +6,11 @@ export class MarkdownParser {
     /**
      * Parses Markdown content, removing formatting and identifying code blocks.
      * @param markdownText The Markdown text to parse.
+     * @param maxInlineCodeLength Inline-code spans up to this length stay inline;
+     *                            longer spans are treated as code blocks. Default 20.
      * @returns An object containing the parsed text and an array of code blocks.
      */
-    public static parseMarkdown(markdownText: string): { parsedText: string; codeBlocks: string[] } {
+    public static parseMarkdown(markdownText: string, maxInlineCodeLength: number = 20): { parsedText: string; codeBlocks: string[] } {
         const codeBlocks: string[] = [];
         let codeBlockIndex = 0;
         
@@ -27,10 +29,10 @@ export class MarkdownParser {
         });
         
         // Handle inline code based on length
-        // Short inline code (≤20 chars) gets special styling markers
-        // Long inline code (>20 chars) gets treated as code blocks
+        // Short inline code (<= maxInlineCodeLength chars) gets special styling markers
+        // Longer inline code gets treated as code blocks
         textWithoutCodeBlocks = textWithoutCodeBlocks.replace(/`([^`]+)`/g, (match, content) => {
-            if (content.length <= 20) {
+            if (content.length <= maxInlineCodeLength) {
                 // Short inline code - preserve for consolas styling
                 return `«code:short»${content}«/code»`;
             } else {
