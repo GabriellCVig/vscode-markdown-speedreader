@@ -76,6 +76,12 @@
           "minimum": 12,
           "maximum": 48,
           "description": "Font size for the speed reading display"
+        },
+        "speedreader.inlineCodeMaxLength": {
+          "type": "number",
+          "default": 20,
+          "minimum": 1,
+          "description": "Maximum character length for inline code to stay inline in the reading flow. Longer inline code is shown in the code panel instead."
         }
       }
     }

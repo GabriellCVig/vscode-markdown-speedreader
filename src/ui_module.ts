@@ -34,7 +34,10 @@ export class SpeedreadingUI {
         console.log('[DEBUG UI] Is markdown:', MarkdownParser.isMarkdown(text));
         
         if (MarkdownParser.isMarkdown(text)) {
-            const parseResult = MarkdownParser.parseMarkdown(text);
+            const maxLen = vscode.workspace
+                .getConfiguration('speedreader')
+                .get<number>('inlineCodeMaxLength', 20);
+            const parseResult = MarkdownParser.parseMarkdown(text, maxLen);
             parsedText = parseResult.parsedText;
             codeBlocks = parseResult.codeBlocks;
             console.log('[DEBUG UI] Parsed text length:', parsedText.length);
