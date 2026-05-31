@@ -184,6 +184,9 @@ export class SpeedreadingUI {
         const scriptUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this.context!.extensionUri, 'media', 'webview.js')
         );
+        const mermaidUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this.context!.extensionUri, 'media', 'mermaid.bundle.js')
+        );
         const styleUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this.context!.extensionUri, 'media', 'webview.css')
         );
@@ -248,6 +251,7 @@ export class SpeedreadingUI {
         </div>
     </div>
 
+    <script nonce="${nonce}" src="${mermaidUri}"></script>
     <script nonce="${nonce}" src="${scriptUri}"></script>
 </body>
 </html>`;
