@@ -155,3 +155,47 @@ describe('webview script', () => {
 		assert.strictEqual(byId('progressText').textContent, '7 / 20 words');
 	});
 });
+
+describe('webview mermaid render path', () => {
+	it('renders a mermaid block via mermaid.render and posts diagramRendered', async () => {
+		const render = sinon.stub().resolves({ svg: '<svg id="m"></svg>' });
+		const built = buildWebviewDom({ mermaid: { render } });
+		const doc = built.window.document;
+		const byId = (id: string) => doc.getElementById(id) as any;
+
+		await built.api.updateCodeBlock({
+			isActive: true,
+			language: 'mermaid',
+			codeContent: 'graph TD;A-->B;'
+		});
+
+		assert.ok(
+			render.calledWith('sr-diagram', 'graph TD;A-->B;'),
+			'expected mermaid.render to be called with the diagram text'
+		);
+		assert.ok(
+			byId('codeContent').innerHTML.includes('<svg'),
+			'expected the rendered SVG to be injected into codeContent'
+		);
+		assert.ok(
+			built.postSpy.calledWith({ command: 'diagramRendered' }),
+			'expected a diagramRendered message to be posted'
+		);
+	});
+
+	it('leaves non-mermaid blocks on the textContent path', async () => {
+		const render = sinon.stub().resolves({ svg: '<svg/>' });
+		const built = buildWebviewDom({ mermaid: { render } });
+		const doc = built.window.document;
+		const byId = (id: string) => doc.getElementById(id) as any;
+
+		await built.api.updateCodeBlock({
+			isActive: true,
+			language: 'javascript',
+			codeContent: 'const x = 1;'
+		});
+
+		assert.ok(render.notCalled, 'mermaid.render must not run for non-mermaid blocks');
+		assert.strictEqual(byId('codeContent').textContent, 'const x = 1;');
+	});
+});

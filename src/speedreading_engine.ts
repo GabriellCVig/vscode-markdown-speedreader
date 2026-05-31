@@ -4,6 +4,7 @@ export interface SpeedreadingConfig {
     fontSize: number;
     pauseOnPunctuation: boolean;
     orpHighlightColor: string;
+    autoPauseOnDiagram?: boolean;
 }
 
 export interface WordSegments {
@@ -241,7 +242,18 @@ export class SpeedreadingEngine {
             this.handleCodeBlockTokenWithIndex(codeBlockIndex);
             this.currentIndex += 3; // Skip [CODE, BLOCK, N]
             this.notifyStateChange();
-            
+
+            // Auto-pause on diagram blocks (e.g. mermaid) so the reader can view
+            // the rendered diagram; playback resumes only on a manual play().
+            if (
+                this.config.autoPauseOnDiagram &&
+                codeBlockIndex >= 0 &&
+                codeBlockIndex < this.codeBlocks.length &&
+                this.extractLanguageFromCodeBlock(this.codeBlocks[codeBlockIndex]) === 'mermaid'
+            ) {
+                this.pause();
+            }
+
             // Don't recursively call showNextWord() - let the timer handle the next word
             // This gives time for the user to see the code block
             return;

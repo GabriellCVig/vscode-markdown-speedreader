@@ -203,7 +203,7 @@
         }
     }
 
-    function updateCodeBlock(codeBlockUpdate) {
+    async function updateCodeBlock(codeBlockUpdate) {
         console.log('updateCodeBlock called:', codeBlockUpdate);
         if (codeBlockUpdate.isActive) {
             // Update header with language info
@@ -212,8 +212,21 @@
                 : 'Code Block';
             codeHeader.textContent = headerText;
 
-            // Update code content
-            codeContent.textContent = codeBlockUpdate.codeContent;
+            // Render mermaid diagrams to SVG when a mermaid runtime is available;
+            // otherwise fall back to showing the raw diagram source as text.
+            if (codeBlockUpdate.language === 'mermaid' && typeof mermaid !== 'undefined') {
+                try {
+                    const { svg } = await mermaid.render('sr-diagram', codeBlockUpdate.codeContent);
+                    codeContent.innerHTML = svg;
+                    vscode.postMessage({ command: 'diagramRendered' });
+                } catch (err) {
+                    console.error('mermaid render failed:', err);
+                    codeContent.textContent = codeBlockUpdate.codeContent;
+                }
+            } else {
+                // Update code content
+                codeContent.textContent = codeBlockUpdate.codeContent;
+            }
         } else {
             // Show placeholder content instead of hiding panel
             codeHeader.textContent = 'Code Block';

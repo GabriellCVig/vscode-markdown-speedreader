@@ -82,6 +82,11 @@
           "default": 20,
           "minimum": 1,
           "description": "Maximum character length for inline code to stay inline in the reading flow. Longer inline code is shown in the code panel instead."
+        },
+        "speedreader.autoPauseOnDiagram": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically pause playback when a diagram (e.g. mermaid) block is reached, so it can be viewed. Resume manually with play."
         }
       }
     }
