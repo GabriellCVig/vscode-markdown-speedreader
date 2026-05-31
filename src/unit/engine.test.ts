@@ -237,6 +237,26 @@ describe('SpeedreadingEngine', () => {
             engine.pause();
             engine.stop();
         });
+
+        it('does not auto-resume when the document ends on a punctuated word (regression for the looping fix)', () => {
+            // Guards speedreading_engine.ts showNextWord: the punctuation-pause
+            // schedules a setTimeout(300) resume, but if the punctuated word was
+            // the LAST word (currentIndex >= words.length) it must NOT resume —
+            // otherwise the reader loops back to the start unexpectedly.
+            const engine = new SpeedreadingEngine(makeConfig({ pauseOnPunctuation: true, wpm: 250 }));
+            engine.loadText('dog cat.'); // words: ['dog', 'cat.'] — ends on punctuation
+
+            engine.play();
+
+            // Drive well past both word intervals AND past the 300ms resume timer.
+            clock.tick(1000);
+
+            const state = engine.getState();
+            assert.strictEqual(state.isPlaying, false, 'engine must stay paused at end, not auto-resume');
+            assert.strictEqual(state.currentIndex, state.totalWords, 'index should be at the end, not reset to 0 by a resume');
+
+            engine.stop();
+        });
     });
 
     describe('play / pause / stop transitions', () => {
