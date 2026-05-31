@@ -1,40 +1,22 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import * as assert from 'assert';
 import * as sinon from 'sinon';
-import { JSDOM } from 'jsdom';
-
-const scriptSrc = fs.readFileSync(
-	path.join(__dirname, '../../media/webview.js'),
-	'utf8'
-);
-
-const html = `<!DOCTYPE html><html><body>
-	<div id="wordContainer"></div><div id="wordBefore"></div><div id="wordOrp"></div>
-	<div id="wordAfter"></div><div id="readyMessage"></div><div id="charMeasure"></div>
-	<button id="playBtn"></button><button id="pauseBtn"></button><button id="stopBtn"></button>
-	<input id="wpmInput"><div id="progressBar"></div><div id="progressFill"></div>
-	<span id="progressText"></span><span id="progressPercent"></span>
-	<input type="checkbox" id="pauseOnPunctuation"><input type="color" id="orpColorInput">
-	<div id="codePanel"></div><div id="codeHeader"></div><div id="codeContent"></div>
-</body></html>`;
+import { buildWebviewDom } from './helpers/webview-dom';
 
 describe('webview script', () => {
-	let dom: JSDOM;
-	let postSpy: sinon.SinonSpy;
 	let win: any;
 	let doc: Document;
+	let postSpy: sinon.SinonSpy;
+	let api: any;
 
 	beforeEach(() => {
-		dom = new JSDOM(html, { runScripts: 'outside-only' });
-		win = dom.window;
+		const built = buildWebviewDom();
+		win = built.window;
 		doc = win.document;
-		postSpy = sinon.spy();
-		win.acquireVsCodeApi = () => ({ postMessage: postSpy });
-		win.eval(scriptSrc);
+		postSpy = built.postSpy;
+		api = built.api;
 	});
 
-	const speedReader = () => win.__speedReader;
+	const speedReader = () => api;
 	const byId = (id: string) => doc.getElementById(id) as any;
 
 	it('posts a ready message on script eval', () => {
