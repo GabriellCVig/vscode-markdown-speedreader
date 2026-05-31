@@ -201,6 +201,76 @@ describe('SpeedreadingEngine', () => {
         });
     });
 
+    describe('autoPauseOnDiagram', () => {
+        const MERMAID_BLOCK = '```mermaid\ngraph TD;A-->B;\n```';
+
+        it('pauses on a mermaid block and stays paused (no auto-resume) when enabled', () => {
+            const engine = new SpeedreadingEngine(
+                makeConfig({ wpm: 600, autoPauseOnDiagram: true })
+            );
+            engine.loadText('word [CODE BLOCK 0] word', [MERMAID_BLOCK]);
+            engine.play();
+
+            // Tick past the diagram token. words = ['word','[CODE','BLOCK','0]','word'].
+            // After showing 'word' (idx 0->1) the next tick hits the diagram token,
+            // advances idx 1->4, fires the code-block update, then auto-pauses.
+            clock.tick(2000);
+
+            let state = engine.getState();
+            assert.strictEqual(state.isPlaying, false, 'should pause at the mermaid block');
+            assert.strictEqual(state.currentIndex, 4, 'should stop right after the diagram token, not run to the end');
+
+            // No auto-resume: more ticks must not move it.
+            clock.tick(2000);
+            state = engine.getState();
+            assert.strictEqual(state.isPlaying, false, 'must stay paused — no auto-resume');
+            assert.strictEqual(state.currentIndex, 4, 'index must not advance while paused');
+
+            // Manual resume works.
+            engine.play();
+            assert.strictEqual(engine.getState().isPlaying, true, 'manual play() should resume');
+
+            engine.pause();
+            engine.stop();
+        });
+
+        it('does not pause on a mermaid block when disabled (runs through)', () => {
+            const engine = new SpeedreadingEngine(
+                makeConfig({ wpm: 600, autoPauseOnDiagram: false })
+            );
+            engine.loadText('word [CODE BLOCK 0] word', [MERMAID_BLOCK]);
+            engine.play();
+
+            // With auto-pause off, playback continues through the diagram to the end,
+            // where the engine stops and resets the index to 0.
+            clock.tick(5000);
+            const state = engine.getState();
+            assert.strictEqual(state.isPlaying, false, 'engine should have run to the end and stopped');
+            assert.strictEqual(state.currentIndex, 0, 'index should reset after reaching the end, not be stuck at the diagram');
+
+            engine.stop();
+        });
+
+        it('reports language "mermaid" on the fired code block update', () => {
+            const engine = new SpeedreadingEngine(
+                makeConfig({ wpm: 600, autoPauseOnDiagram: false })
+            );
+            const codeUpdates: CodeBlockUpdate[] = [];
+            engine.setOnCodeBlockUpdate((update: CodeBlockUpdate) => {
+                codeUpdates.push(update);
+            });
+            engine.loadText('word [CODE BLOCK 0] word', [MERMAID_BLOCK]);
+            engine.play();
+            clock.tick(2000);
+
+            const active = codeUpdates.find(u => u.isActive === true && u.codeIndex === 0);
+            assert.ok(active, 'expected an active code block update');
+            assert.strictEqual(active!.language, 'mermaid');
+
+            engine.stop();
+        });
+    });
+
     describe('pauseOnPunctuation', () => {
         it('pauses after a punctuated word and resumes after 300ms', () => {
             const engine = new SpeedreadingEngine(makeConfig({ pauseOnPunctuation: true, wpm: 250 }));

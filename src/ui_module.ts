@@ -14,7 +14,8 @@ export class SpeedreadingUI {
             highlightColor: '#007acc',
             fontSize: 24,
             pauseOnPunctuation: true,
-            orpHighlightColor: '#ff4444'
+            orpHighlightColor: '#ff4444',
+            autoPauseOnDiagram: false
         };
         this.engine = new SpeedreadingEngine(defaultConfig);
         this.setupEngineCallbacks();
@@ -25,6 +26,12 @@ export class SpeedreadingUI {
      */
     public show(text: string, context: vscode.ExtensionContext): void {
         this.context = context;
+
+        // Apply user settings that can change between invocations.
+        const autoPauseOnDiagram = vscode.workspace
+            .getConfiguration('speedreader')
+            .get<boolean>('autoPauseOnDiagram', false);
+        this.engine.updateConfig({ autoPauseOnDiagram });
 
         // Parse markdown if applicable
         let parsedText = text;
