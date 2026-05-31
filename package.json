@@ -3,16 +3,29 @@
   "displayName": "Markdown Speed Reader",
   "description": "A VSCode extension for speed reading markdown and text files with configurable reading speeds and controls.",
   "version": "0.0.1",
+  "publisher": "GabriellCVig",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.100.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/markdownspeedreader.git"
+    "url": "https://github.com/GabriellCVig/vscode-markdown-speedreader.git"
   },
+  "bugs": {
+    "url": "https://github.com/GabriellCVig/vscode-markdown-speedreader/issues"
+  },
+  "homepage": "https://github.com/GabriellCVig/vscode-markdown-speedreader#readme",
   "categories": [
     "Other",
     "Education"
+  ],
+  "keywords": [
+    "speed reading",
+    "rsvp",
+    "markdown",
+    "reader",
+    "mermaid"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
@@ -102,6 +115,9 @@
     "test:browser": "npm run build:webview && playwright test",
     "test": "npm run lint && npm run test:unit && npm run test:integration"
   },
+  "dependencies": {
+    "markdown-it": "^14.0.0"
+  },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "@types/jsdom": "^28.0.3",
@@ -116,9 +132,7 @@
     "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.28.0",
     "eslint": "^9.25.1",
-    "fs": "^0.0.1-security",
     "jsdom": "^29.1.1",
-    "markdown-it": "^14.0.0",
     "mermaid": "^11.15.0",
     "mocha": "^11.7.6",
     "sinon": "^22.0.0",
