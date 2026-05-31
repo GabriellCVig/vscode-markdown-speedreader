@@ -156,6 +156,52 @@ describe('webview script', () => {
 	});
 });
 
+describe('inline-code ORP coloring', () => {
+	function inlineSegments() {
+		return {
+			before: 'f',
+			orp: 'o',
+			after: 'o',
+			orpPosition: 1,
+			isInlineCode: true,
+			inlineCodeContent: 'foo'
+		};
+	}
+
+	it('colors the inline-code ORP letter with the highlight color and keeps the subtle background', () => {
+		const built = buildWebviewDom();
+		const doc = built.window.document;
+		const byId = (id: string) => doc.getElementById(id) as any;
+
+		byId('orpColorInput').value = '#ff4444';
+		built.api.updateWordDisplay(inlineSegments());
+
+		const orp = byId('wordOrp');
+		assert.notStrictEqual(orp.style.color, 'inherit', 'ORP letter must not be left uncolored');
+		assert.notStrictEqual(orp.style.color, '', 'ORP letter must have a color set');
+		// The background highlight is intentionally retained for inline code.
+		assert.notStrictEqual(orp.style.backgroundColor, '', 'subtle background should be kept');
+		assert.notStrictEqual(orp.style.backgroundColor, 'transparent', 'background should not be cleared for inline code');
+	});
+
+	it('matches the orpColorInput value for inline code', () => {
+		const built = buildWebviewDom();
+		const doc = built.window.document;
+		const byId = (id: string) => doc.getElementById(id) as any;
+
+		byId('orpColorInput').value = '#00ff00';
+		built.api.updateWordDisplay(inlineSegments());
+
+		const colorInputAsApplied = byId('orpColorInput').value;
+		// Apply the same value to a probe element so we compare in jsdom's
+		// serialized form regardless of how it normalizes the color string.
+		const probe = doc.getElementById('charMeasure') as any;
+		probe.style.color = colorInputAsApplied;
+
+		assert.strictEqual(byId('wordOrp').style.color, probe.style.color);
+	});
+});
+
 describe('webview mermaid render path', () => {
 	it('renders a mermaid block via mermaid.render and posts diagramRendered', async () => {
 		const render = sinon.stub().resolves({ svg: '<svg id="m"></svg>' });

@@ -142,9 +142,11 @@
         wordOrp.style.left = '50%';
         wordOrp.style.transform = 'translateX(-50%)';
 
-        // For inline code, use a more subtle ORP highlight that doesn't clash with code styling
+        // For inline code, color the ORP letter with the highlight color (like
+        // regular words) AND keep a subtle background so it pops against the
+        // code-styled chip.
         if (segments.isInlineCode) {
-            wordOrp.style.color = 'inherit';
+            wordOrp.style.color = orpColorInput.value;
             wordOrp.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
             wordOrp.style.borderRadius = '2px';
             wordOrp.style.padding = '0 1px';
