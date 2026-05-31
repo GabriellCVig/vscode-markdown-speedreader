@@ -30,6 +30,10 @@
         progress: 0
     };
 
+    // Monotonic id so each mermaid.render() gets a unique element id, avoiding
+    // duplicate-id collisions across multiple diagrams in one session.
+    let diagramSeq = 0;
+
     // Event Listeners
     playBtn.addEventListener('click', () => {
         vscode.postMessage({ command: 'play' });
@@ -218,7 +222,7 @@
             // otherwise fall back to showing the raw diagram source as text.
             if (codeBlockUpdate.language === 'mermaid' && typeof mermaid !== 'undefined') {
                 try {
-                    const { svg } = await mermaid.render('sr-diagram', codeBlockUpdate.codeContent);
+                    const { svg } = await mermaid.render('sr-diagram-' + (++diagramSeq), codeBlockUpdate.codeContent);
                     codeContent.innerHTML = svg;
                     vscode.postMessage({ command: 'diagramRendered' });
                 } catch (err) {

@@ -216,7 +216,7 @@ describe('webview mermaid render path', () => {
 		});
 
 		assert.ok(
-			render.calledWith('sr-diagram', 'graph TD;A-->B;'),
+			render.calledWithMatch(sinon.match(/^sr-diagram/), 'graph TD;A-->B;'),
 			'expected mermaid.render to be called with the diagram text'
 		);
 		assert.ok(

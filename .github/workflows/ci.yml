@@ -24,5 +24,11 @@ jobs:
       - name: Unit tests
         run: npm run test:unit
 
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser tests
+        run: npm run test:browser
+
       - name: Integration tests
         run: xvfb-run -a npm run test:integration
