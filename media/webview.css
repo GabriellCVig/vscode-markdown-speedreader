@@ -24,6 +24,9 @@ body {
 
 .speed-reader-panel {
     flex: 1;
+    /* Allow this flex item to shrink below its content width so a wide code
+       block in the sibling panel cannot steal the reading panel's space. */
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -32,6 +35,9 @@ body {
 
 .code-panel {
     flex: 1;
+    /* Allow shrinking below content width; the wide <pre> scrolls inside
+       .code-content (overflow: auto) instead of expanding the panel. */
+    min-width: 0;
     display: flex;
     flex-direction: column;
     border-left: 1px solid var(--vscode-panel-border);
