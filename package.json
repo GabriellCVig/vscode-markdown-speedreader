@@ -84,14 +84,17 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test:unit": "mocha",
+    "test:integration": "npm run compile && vscode-test",
+    "test": "npm run lint && npm run test:unit && npm run test:integration"
   },
   "devDependencies": {
+    "@types/jsdom": "^28.0.3",
     "@types/markdown-it": "^14.1.2",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
+    "@types/sinon": "^21.0.1",
     "@types/vscode": "^1.100.0",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
     "@typescript-eslint/parser": "^8.31.1",
@@ -99,7 +102,11 @@
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.25.1",
     "fs": "^0.0.1-security",
+    "jsdom": "^29.1.1",
     "markdown-it": "^14.0.0",
+    "mocha": "^11.7.6",
+    "sinon": "^22.0.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
 }
