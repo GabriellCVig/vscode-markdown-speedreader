@@ -3,7 +3,7 @@
   "displayName": "Markdown Speed Reader",
   "description": "A VSCode extension for speed reading markdown and text files with configurable reading speeds and controls.",
   "version": "0.0.1",
-  "publisher": "GabriellCVig",
+  "publisher": "gabriellvig",
   "license": "MIT",
   "engines": {
     "vscode": "^1.100.0"
