@@ -229,8 +229,16 @@
                     console.error('mermaid render failed:', err);
                     codeContent.textContent = codeBlockUpdate.codeContent;
                 }
+            } else if (codeBlockUpdate.language && typeof hljs !== 'undefined') {
+                try {
+                    const result = hljs.highlight(codeBlockUpdate.codeContent, {
+                        language: codeBlockUpdate.language
+                    });
+                    codeContent.innerHTML = result.value;
+                } catch (_) {
+                    codeContent.textContent = codeBlockUpdate.codeContent;
+                }
             } else {
-                // Update code content
                 codeContent.textContent = codeBlockUpdate.codeContent;
             }
         } else {

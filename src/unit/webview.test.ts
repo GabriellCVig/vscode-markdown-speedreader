@@ -245,3 +245,64 @@ describe('webview mermaid render path', () => {
 		assert.strictEqual(byId('codeContent').textContent, 'const x = 1;');
 	});
 });
+
+describe('webview highlight.js render path', () => {
+	it('highlights a known language via hljs.highlight', async () => {
+		const highlight = sinon.stub().returns({ value: '<span class="hljs-keyword">const</span> x' });
+		const built = buildWebviewDom({ hljs: { highlight } });
+		const doc = built.window.document;
+		const byId = (id: string) => doc.getElementById(id) as any;
+
+		await built.api.updateCodeBlock({
+			isActive: true,
+			language: 'javascript',
+			codeContent: 'const x = 1;'
+		});
+
+		assert.ok(
+			highlight.calledWith('const x = 1;', { language: 'javascript' }),
+			'expected hljs.highlight to be called with the code and language'
+		);
+		assert.ok(
+			byId('codeContent').innerHTML.includes('<span'),
+			'expected highlighted HTML to be injected into codeContent'
+		);
+	});
+
+	it('falls back to textContent when hljs throws (unknown language)', async () => {
+		const highlight = sinon.stub().throws(new Error('Unknown language'));
+		const built = buildWebviewDom({ hljs: { highlight } });
+		const doc = built.window.document;
+		const byId = (id: string) => doc.getElementById(id) as any;
+
+		await built.api.updateCodeBlock({
+			isActive: true,
+			language: 'brainfuck',
+			codeContent: '+++++'
+		});
+
+		assert.strictEqual(
+			byId('codeContent').textContent,
+			'+++++',
+			'expected raw text fallback when hljs throws'
+		);
+	});
+
+	it('falls back to textContent when hljs global is absent', async () => {
+		const built = buildWebviewDom();
+		const doc = built.window.document;
+		const byId = (id: string) => doc.getElementById(id) as any;
+
+		await built.api.updateCodeBlock({
+			isActive: true,
+			language: 'javascript',
+			codeContent: 'x'
+		});
+
+		assert.strictEqual(
+			byId('codeContent').textContent,
+			'x',
+			'expected plain text when hljs global is not set'
+		);
+	});
+});

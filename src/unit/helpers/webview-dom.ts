@@ -30,13 +30,16 @@ export interface WebviewDom {
  * (capturing postMessage on a spy), optionally injects a mocked `window.mermaid`,
  * then evaluates media/webview.js and returns the captured handles.
  */
-export function buildWebviewDom(opts: { mermaid?: any } = {}): WebviewDom {
+export function buildWebviewDom(opts: { mermaid?: any; hljs?: any } = {}): WebviewDom {
 	const dom = new JSDOM(html, { runScripts: 'outside-only' });
 	const window = dom.window as any;
 	const postSpy = sinon.spy();
 	window.acquireVsCodeApi = () => ({ postMessage: postSpy });
 	if (opts.mermaid !== undefined) {
 		window.mermaid = opts.mermaid;
+	}
+	if (opts.hljs !== undefined) {
+		window.hljs = opts.hljs;
 	}
 	window.eval(scriptSrc);
 	return { dom, window, postSpy, api: window.__speedReader };

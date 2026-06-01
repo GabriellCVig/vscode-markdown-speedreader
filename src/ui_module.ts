@@ -190,6 +190,12 @@ export class SpeedreadingUI {
         const styleUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this.context!.extensionUri, 'media', 'webview.css')
         );
+        const highlightScriptUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this.context!.extensionUri, 'media', 'highlight.bundle.js')
+        );
+        const highlightStyleUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this.context!.extensionUri, 'media', 'highlight.bundle.css')
+        );
 
         return `<!DOCTYPE html>
 <html lang="en">
@@ -199,6 +205,7 @@ export class SpeedreadingUI {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speed Reader</title>
     <link rel="stylesheet" href="${styleUri}">
+    <link rel="stylesheet" href="${highlightStyleUri}">
 </head>
 <body>
     <div class="reading-area">
@@ -251,6 +258,7 @@ export class SpeedreadingUI {
         </div>
     </div>
 
+    <script nonce="${nonce}" src="${highlightScriptUri}"></script>
     <script nonce="${nonce}" src="${mermaidUri}"></script>
     <script nonce="${nonce}" src="${scriptUri}"></script>
 </body>
