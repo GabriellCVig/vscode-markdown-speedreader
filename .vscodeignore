@@ -15,6 +15,7 @@ test-results/**
 .mocharc.cjs
 tsconfig.unit.json
 system_design_document.md
+images/**
 .gitignore
 .yarnrc
 vsc-extension-quickstart.md

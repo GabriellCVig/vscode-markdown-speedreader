@@ -2,6 +2,8 @@
 
 A powerful VSCode extension that enables speed reading of markdown and text files with configurable reading speeds, intelligent text processing, and an intuitive user interface.
 
+![Markdown Speed Reader in action: RSVP word playback with ORP highlighting, inline code, fenced code blocks, and live mermaid diagram rendering in the side panel](images/demo.gif)
+
 ## Features
 
 - 🚀 **Speed Reading**: Read text at configurable speeds (50-1000 WPM).
@@ -13,6 +15,7 @@ A powerful VSCode extension that enables speed reading of markdown and text file
         - Short inline code snippets (e.g., `` `variableName` ``) are specially styled (monospace font, background) and displayed in the main reading area with ORP.
         - Longer inline code snippets are treated as full code blocks and displayed in the dedicated code panel.
 - ✨ **Dedicated Code View**: A separate panel within the speed reading UI dynamically displays the content of the current code block, complete with its language identifier if provided in the Markdown.
+- 🧜 **Mermaid Diagrams**: ` ```mermaid ` blocks are rendered as live SVG diagrams in the code panel as you reach them. Optionally auto-pause playback on a diagram (`speedreader.autoPauseOnDiagram`) so you can take it in, then resume with Play.
 - 🎮 **Intuitive Controls**: Play/pause/stop functionality accessible via UI buttons and keyboard shortcuts (Spacebar for play/pause, Escape for stop).
 - 📊 **Progress Tracking**: Visual progress bar indicating your position in the text, with click-to-seek functionality.
 - ⚙️ **Configurable Settings**:
