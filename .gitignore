@@ -4,6 +4,8 @@ node_modules
 .vscode-test/
 *.vsix
 media/mermaid.bundle.js
+media/highlight.bundle.js
+media/highlight.bundle.css
 playwright-report/
 test-results/
 # Stray TS->JS output emitted next to test infra .ts sources by editor watchers
