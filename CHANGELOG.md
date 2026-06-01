@@ -4,6 +4,10 @@ All notable changes to the "markdownspeedreader" extension will be documented in
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.1]
+
+- Fix README: correct repository URL, add missing settings (`inlineCodeMaxLength`, `autoPauseOnDiagram`), fix issues link, remove stale changelog and placeholder roadmap sections.
+
 ## [1.0.0]
 
 Initial release.
