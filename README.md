@@ -27,15 +27,17 @@ A powerful VSCode extension that enables speed reading of markdown and text file
 
 ## Installation
 
-1. **From Source**:
+1. **From the Marketplace**: Search for **Markdown Speed Reader** in the VSCode Extensions panel and click Install.
+
+2. **From Source**:
    ```bash
-   git clone <repository-url>
-   cd markdownspeedreader
+   git clone https://github.com/GabriellCVig/vscode-markdown-speedreader.git
+   cd vscode-markdown-speedreader
    npm install
    npm run compile
    ```
 
-2. **Development**: Press `F5` in VSCode to launch a new Extension Development Host window
+3. **Development**: Press `F5` in VSCode to launch a new Extension Development Host window.
 
 ## Usage
 
@@ -107,7 +109,9 @@ Configure the extension via VSCode settings (`File > Preferences > Settings`):
 {
   "speedreader.defaultWPM": 250,
   "speedreader.pauseOnPunctuation": true,
-  "speedreader.fontSize": 24
+  "speedreader.fontSize": 24,
+  "speedreader.inlineCodeMaxLength": 20,
+  "speedreader.autoPauseOnDiagram": false
 }
 ```
 
@@ -123,6 +127,12 @@ Configure the extension via VSCode settings (`File > Preferences > Settings`):
 - **`speedreader.fontSize`** (default: 24)
   - Font size for the speed reading display
   - Range: 12-48 pixels
+
+- **`speedreader.inlineCodeMaxLength`** (default: 20)
+  - Inline code snippets up to this character length stay in the main reading flow; longer ones are routed to the code panel
+
+- **`speedreader.autoPauseOnDiagram`** (default: false)
+  - Automatically pause playback when a mermaid diagram block is reached; resume manually with Play
 
 ## Supported File Types
 
@@ -222,11 +232,17 @@ npm run lint
 The extension includes comprehensive testing:
 
 ```bash
-# Run all tests
-npm test
+# Unit tests (Mocha + ts-node)
+npm run test:unit
 
-# Run with coverage
-npm run test:coverage
+# Browser tests (Playwright/Chromium — real mermaid SVG render)
+npm run test:browser
+
+# Integration tests (Electron/VSCode)
+npm run test:integration
+
+# All (lint + unit + integration)
+npm test
 ```
 
 ## Architecture
@@ -282,7 +298,7 @@ The extension follows a modular architecture with clear separation of concerns:
 
 ### Getting Help
 
-- Check the [Issues](../../issues) page for known problems
+- Check the [Issues](https://github.com/GabriellCVig/vscode-markdown-speedreader/issues) page for known problems
 - Create a new issue with detailed reproduction steps
 - Include VSCode version, extension version, and file type being read
 
@@ -292,29 +308,7 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) file for 
 
 ## Changelog
 
-### Version 0.0.1
-- Initial release
-- Basic speed reading functionality
-- Markdown and text file support
-- Configurable reading speeds
-- VSCode theme integration
-- Keyboard shortcuts and context menus
-
-## Roadmap
-
-### Upcoming Features
-- Reading statistics and analytics
-- Custom themes and color schemes
-- Code syntax highlighting for programming files
-- Reading bookmarks and session saving
-- Multi-language support
-- Cloud synchronization
-
-### Long-term Goals
-- Advanced reading algorithms (variable speed, focus modes)
-- Integration with productivity tools
-- Collaborative reading features
-- Machine learning-based reading optimization
+See [CHANGELOG.md](CHANGELOG.md) for the full release history.
 
 ---
 
